@@ -67,7 +67,6 @@ var baseFetch = {
 		Object.assign( req, this.init );
 
 		url = this.encodeGETUrl( this.BASE_URL + url, vars );
-		console.log('sending url: ' + url );
 		return fetch( url, req ).then( this._decode ).then( this._success ).catch(this._fail );
 
 	},
@@ -91,14 +90,13 @@ var baseFetch = {
 		Object.assign( req, this.init );
 
 		url = this.encodeGETUrl( this.BASE_URL + url, vars );
-		console.log('sending url: ' + url );
 
 		return fetch( url, req ).then( this._decode ).then( this._success ).catch(this._fail );
 	
 	},
 
 	/**
-	 * Each encoded variable arrives as a single json-string POST variable.
+	 * The body of the POST is encoded as a JSON string.
 	 * @param {string} url 
 	 * @param {Object|null} [vars=null] - object with properties that should be individually
 	 * encoded as json.
@@ -127,7 +125,7 @@ var baseFetch = {
 	},
 
 	/**
-	 * 
+	 * Each POST variable is encoded as a separate JSON string.
 	 * @param {string} url 
 	 * @param {Object|null} [vars=null] 
 	 */
@@ -169,6 +167,8 @@ var baseFetch = {
 	},
 
 	urlVars( vars ) {
+
+		if ( !vars ) return null;
 
 		let full = '';
 
@@ -220,13 +220,25 @@ function okCb(json) {
 function resultCb( res ){
 
 	if ( res.ok === false ) throw new Error( res.statusText);
-	return res.json();
+
+	// need a chance to get the error as text if not json.
+	return res.text().then(
+
+		txt=>{
+
+			try {
+				return JSON.parse( txt );
+			} catch (e ){
+				throw new Error(txt);
+			}
+		}
+
+	);
 
 }
 
 function failCb(err){
 
-	console.log( 'FAIL: ' + err );
 	if ( this.fail ) this.fail(err);
 	return err;
 
