@@ -1,6 +1,6 @@
 {
   "name": "lemur-fetch",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Wraps fetch() post/get calls.",
   "main": "index.js",
   "repository": {
