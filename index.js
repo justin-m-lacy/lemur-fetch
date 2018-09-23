@@ -67,7 +67,7 @@ var baseFetch = {
 		Object.assign( req, this.init );
 
 		url = this.encodeGETUrl( this.BASE_URL + url, vars );
-		return fetch( url, req ).then( this._decode ).then( this._success ).catch(this._fail );
+		return fetch( url, req ).then( this._decode, this._fail ).then( this._success, this._fail );
 
 	},
 
@@ -91,7 +91,7 @@ var baseFetch = {
 
 		url = this.encodeGETUrl( this.BASE_URL + url, vars );
 
-		return fetch( url, req ).then( this._decode ).then( this._success ).catch(this._fail );
+		return fetch( url, req ).then( this._decode, this._fail ).then( this._success, this._fail );
 	
 	},
 
@@ -120,7 +120,7 @@ var baseFetch = {
 		};
 		Object.assign( req, this.init );
 
-		return fetch( this.BASE_URL + url, req ).then( this._decode ).then( this._success ).catch(this._fail );
+		return fetch( this.BASE_URL + url, req ).then( this._decode, this._fail ).then( this._success, this._fail );
 
 	},
 
@@ -150,7 +150,7 @@ var baseFetch = {
 		};
 		Object.assign( req, this.init );
 
-		return fetch( this.BASE_URL + url, req ).then( this._decode ).then( this._success ).catch(this._fail );
+		return fetch( this.BASE_URL + url, req ).then( this._decode, this._fail ).then( this._success, this._fail );
 
 	},
 
