@@ -177,14 +177,14 @@ var baseFetch = {
 		if ( len === 0 ) return full;
 
 		let p = props[0];
-		full += p + '=' + vars[p];
+		full += encodeURIComponent(p) + '=' + encodeURIComponent(vars[p]);
 
 		for( let i = 1; i < len; i++ ) {
 			p = props[i];
-			full +=  '&' + p + '=' + vars[p];
+			full +=  '&' + encodeURIComponent(p) + '=' + encodeURIComponent(vars[p]);
 		}
 
-		return encodeURI( full );
+		return ( full );
 	},
 
 	_decode:null,
