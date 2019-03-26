@@ -3,6 +3,15 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/Response
  */
 
+ /**
+  * @callback successCb
+  * @param {Response}
+  */
+ /**
+  * @callback failCb
+  * @param {?Object|string}
+  */
+
 var baseFetch = {
 
 	/**
@@ -13,13 +22,13 @@ var baseFetch = {
 	init:{},
 
 	/**
-	 * {function(Response)} function to call on every successful request.
+	 * {successCb} function to call on every successful request.
 	 */
 	success:null,
 
 	/**
-	 * {function(Object|string)} Optional function to call on any error.
-	 * This function is also called if the fetch() call succeeds,
+	 * {failCb} Optional function to call on any error.
+	 * The function is also called if the fetch() call succeeds,
 	 * but Response.ok === false.
 	 */
 	fail:null,
@@ -36,9 +45,9 @@ var baseFetch = {
 	POST_VAR:'post_data',
 
 	/**
-	 * Sets the init{} setting indicating credentials should be sent
-	 * with fetch() requestst.
-	 * @param {bool} [sameOrigin=true] Only send credentials for same-origin requests.
+	 * Setting which indicates credentials should be sent with fetch() requests.
+	 * This modifies the init member object..
+	 * @param {boolean} [sameOrigin=true] Only send credentials for same-origin requests.
 	 */
 	sendCredentials( sameOrigin=false) {
 		this.init.credentials = sameOrigin ? 'same-origin' : 'include';
@@ -47,7 +56,7 @@ var baseFetch = {
 	/**
 	 * 
 	 * @param {string} url - url to fetch. prepended with exported BASE_URL variable.
-	 * @param {Object|null} [vars=null] - variables to send in the request.
+	 * @param {?Object} [vars=null] - variables to send in the request.
 	 * @returns {Promise}
 	 */
 	getJSON( url, vars=null ) {
@@ -74,7 +83,7 @@ var baseFetch = {
 	/**
 	 * 
 	 * @param {string} url 
-	 * @param {Object|null} [vars=null] 
+	 * @param {?Object} [vars=null] 
 	 * @returns {Promise}
 	 */
 	get( url, vars=null ) {
@@ -98,7 +107,7 @@ var baseFetch = {
 	/**
 	 * The body of the POST is encoded as a JSON string.
 	 * @param {string} url 
-	 * @param {Object|null} [vars=null] - object with properties that should be individually
+	 * @param {?Object} [vars=null] - object with properties that should be individually
 	 * encoded as json.
 	 * @returns {Promise}
 	 */
@@ -127,7 +136,8 @@ var baseFetch = {
 	/**
 	 * Each POST variable is encoded as a separate JSON string.
 	 * @param {string} url 
-	 * @param {Object|null} [vars=null] 
+	 * @param {?Object} [vars=null] 
+	 * @returns {Promise}
 	 */
 	post( url, vars=null ) {
 
@@ -157,7 +167,8 @@ var baseFetch = {
 	/**
 	 * 
 	 * @param {string} url 
-	 * @param {Object|null} [vars=null] 
+	 * @param {?Object} [vars=null]
+	 * @returns {string}
 	 */
 	encodeGETUrl( url, vars=null ) {
 
@@ -166,6 +177,11 @@ var baseFetch = {
 
 	},
 
+	/**
+	 * 
+	 * @param {?Object} vars
+	 * @returns {?string}
+	 */
 	urlVars( vars ) {
 
 		if ( !vars ) return null;
@@ -210,6 +226,11 @@ function makeFetcher() {
 
 }
 
+/**
+ * 
+ * @param {*} json - decoded json object.
+ * @returns {*} the decoded json object.
+ */
 function okCb(json) {
 
 	if ( this.success ) this.success( json );
@@ -217,11 +238,16 @@ function okCb(json) {
 
 }
 
+/**
+ * 
+ * @param {Response} res
+ * @returns {Promise}
+ */
 function resultCb( res ){
 
 	if ( res.ok === false ) throw new Error( res.statusText);
 
-	// need a chance to get the error as text if not json.
+	// need a chance to get the error as text, not json.
 	return res.text().then(
 
 		txt=>{
@@ -237,6 +263,10 @@ function resultCb( res ){
 
 }
 
+/**
+ * 
+ * @param {?object|string} err 
+ */
 function failCb(err){
 
 	if ( this.fail ) this.fail(err);
